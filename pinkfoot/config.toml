@@ -1,0 +1,8 @@
+[API]
+Port = 3000
+
+[Persistance]
+DataFile = "queuefile.nogit"
+NextMessageFile = "nextmessagefile.nogit"
+MaxBytes = 1024
+MaxUnreadMessages = 1000
