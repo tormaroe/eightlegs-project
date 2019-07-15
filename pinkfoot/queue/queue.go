@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 
 	"github.com/tormaroe/eightlegs-project/pinkfoot/config"
 )
@@ -26,9 +25,7 @@ func Init(conf config.Config) (*PersistantQueue, error) {
 	pq := PersistantQueue{
 		config:   conf,
 		pushChan: make(chan PushRequest, 10),
-		len: &atomicCount{
-			mut: &sync.Mutex{},
-		},
+		len:      &atomicCount{},
 	}
 
 	pr, err := pq.pushRoutine()

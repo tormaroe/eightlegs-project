@@ -3,7 +3,7 @@ package queue
 import "sync"
 
 type atomicCount struct {
-	mut *sync.Mutex
+	mut sync.Mutex
 	v   int
 }
 
