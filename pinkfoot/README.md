@@ -37,7 +37,11 @@ $ curl http://localhost:3000 -vvv
 < X-Correlation-Id: 765b1407-9bce-43f5-ab53-be8fb9351ea1
 ...
 This is a test
+```
 
+And then the receipt with the same correlation ID:
+
+```
 $ curl http://localhost:3000 \
        -X PUT \
        -H "X-Correlation-Id: 765b1407-9bce-43f5-ab53-be8fb9351ea1" \
@@ -50,4 +54,14 @@ $ curl http://localhost:3000 \
 
 ## Sequence diagrams
 
+### Push
+
 ![Push sequence](../diagrams/pinkfoot/doc/push_sequence/push_sequence.png)
+
+### Pop
+
+![Pop sequence](../diagrams/pinkfoot/doc/pop_sequence/pop_sequence.png)
+
+### Receipt
+
+![Receipt sequence](../diagrams/pinkfoot/doc/receipt_sequence/receipt_sequence.png)
