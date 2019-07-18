@@ -47,3 +47,7 @@ $ curl http://localhost:3000 \
 < HTTP/1.1 204 No Content
 ...
 ```
+
+## Sequence diagrams
+
+![Push sequence](../diagrams/pinkfoot/doc/push_sequence/push_sequence.png)
