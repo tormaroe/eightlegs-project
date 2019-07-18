@@ -7,7 +7,7 @@ Pinkfoot is NOT production ready!!!
 
 ## Configure and run
 
-Pinkfoot requires exactly one command line argument, which is the path to a TOML configuration file. See the complete configuration file in the repository for details on what can be configured.
+Pinkfoot requires exactly one command line argument, which is the path to a TOML configuration file. See the [complete configuration file](./config.toml) for details on what can be configured.
 
 ## Usage
 
