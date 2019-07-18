@@ -3,5 +3,9 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"plantuml.exportFormat": "png",
+		"plantuml.exportOutDir": "diagrams"
+	}
 }

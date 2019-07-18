@@ -1,0 +1,47 @@
+@startuml
+
+autonumber
+hide footbox
+skinparam roundcorner 20
+
+actor Client
+boundary api.Handler
+entity Acc << chan >>
+entity PushRequest << chan >>
+control pushRoutine << go routine >>
+database Appendfile
+
+activate PushRequest #BBFFBB
+activate pushRoutine #BBFFBB
+Client --> api.Handler : HTTP POST\n{ msg bytes in body }
+activate api.Handler
+api.Handler --> PushRequest : Push
+activate Acc #FFBBBB
+note left
+    Validate queue length
+    not exceeded.
+endnote
+hnote over api.Handler
+    Go routine waits for
+    signal on short lived
+    acc channel.
+endnote
+PushRequest --> pushRoutine
+pushRoutine --> Appendfile : Write message
+note right
+    Serialized as
+    length + bytes
+endnote
+pushRoutine --> pushRoutine : Increment queue\nlength
+note right
+    Length kept
+    in-memory only
+endnote
+pushRoutine --> Acc : close
+Acc --> api.Handler
+deactivate Acc
+api.Handler --> Client : No content
+deactivate api.Handler
+
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+
+autonumber
+hide footbox
+skinparam roundcorner 20
+
+actor Client
+boundary api.Handler
+entity Receipt << chan >>
+control receiptRoutine << go routine >>
+collections WaitForReceipt << map >>
+database ReadOffsetFile
+
+activate Receipt #BBFFBB
+activate receiptRoutine #BBFFBB
+Client --> api.Handler : HTTP PUT\nw/ X-Correlation-ID
+activate api.Handler
+api.Handler --> Receipt : AddReceipt(uuid)
+api.Handler --> Client : No content
+deactivate api.Handler
+
+Receipt --> receiptRoutine
+receiptRoutine --> WaitForReceipt : Remove
+receiptRoutine --> ReadOffsetFile : Advance if possible
+
+@enduml

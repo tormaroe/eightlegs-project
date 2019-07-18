@@ -1,0 +1,40 @@
+@startuml
+
+autonumber
+hide footbox
+skinparam roundcorner 20
+
+actor Client
+boundary api.Handler
+entity Reply << chan >>
+entity PopRequest << chan >>
+control popRoutine << go routine >>
+database Appendfile
+collections WaitForReceipt << map >>
+
+activate PopRequest #BBFFBB
+activate popRoutine #BBFFBB
+Client --> api.Handler : HTTP GET
+activate api.Handler
+api.Handler --> PopRequest : Pop
+note right
+    A uuid is created
+endnote
+activate Reply #FFBBBB
+PopRequest --> popRoutine
+popRoutine --> Appendfile : Read
+popRoutine --> Reply : Send bytes and close
+
+Reply --> api.Handler
+deactivate Reply
+api.Handler --> Client : Bytes
+note over api.Handler
+    Uuid is sent in header
+    X-Correlation-ID
+endnote
+deactivate api.Handler
+
+popRoutine --> popRoutine : Decrement\nqueue length
+popRoutine --> WaitForReceipt : uuid + bytes + time
+
+@enduml
