@@ -16,45 +16,53 @@ type PopRequest struct {
 
 func (pq *PersistantQueue) Pop(req PopRequest) (uuid.UUID, bool) {
 	req.id = uuid.New()
-	if pq.len.val() == 0 {
-		return req.id, false
-	}
 	pq.popChan <- req
 	return req.id, true
 }
 
 func (pq *PersistantQueue) popRoutine() (func(), error) {
+	log.Println("Opening reader for file", pq.config.Persistance.DataFile)
 	f, err := os.OpenFile(pq.config.Persistance.DataFile, os.O_RDONLY, 0644)
 	if err != nil {
 		return func() {}, err
 	}
 
-	// TODO: Add correct offset to f
-
 	return func() {
+		log.Println("popRoutine starting!")
 		for {
-			req := <-pq.popChan
-
-			if pq.len.val() == 0 {
-				req.Reply <- nil
-				continue
-			}
-
-			bytes, err := req.read(f)
-			if err == io.EOF {
-				req.Reply <- nil
+			select {
+			case req := <-pq.popChan:
+				pq.setCurrOffset(f)
+				bytes, err := req.read(f)
+				if err == io.EOF {
+					req.Reply <- nil
+					close(req.Reply)
+					continue
+				} else if err != nil {
+					log.Fatal(err)
+					return
+				}
+				req.Reply <- bytes
 				close(req.Reply)
-				continue
-			} else if err != nil {
-				log.Fatal(err)
+				pq.addWaitingForReceipt(req.id, bytes, pq.currOffset)
+			case <-pq.stopChan:
+				log.Println("popRoutine stopping!")
+				pq.setCurrOffset(f)
+				f.Close()
+				pq.stopWG.Done()
 				return
 			}
-			req.Reply <- bytes
-			close(req.Reply)
-			pq.len.dec()
-			pq.addWaitingForReceipt(req.id)
 		}
 	}, nil
+}
+
+func (pq *PersistantQueue) setCurrOffset(f io.Seeker) {
+	currOffset, err := f.Seek(0, 1)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	pq.currOffset = currOffset
 }
 
 func (req PopRequest) read(f *os.File) ([]byte, error) {

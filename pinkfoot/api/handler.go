@@ -55,7 +55,6 @@ func (h *Handler) handlePush(w http.ResponseWriter, r *http.Request) {
 
 	<-acc // Wait for completion
 	// TODO: Timeout ??
-	defer log.Printf("Queue length is %d\n", h.Queue.Len())
 	w.WriteHeader(http.StatusNoContent)
 }
 

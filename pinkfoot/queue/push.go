@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 	"os"
 )
@@ -14,32 +13,35 @@ type PushRequest struct {
 
 // Push will process a PushRequest concurrently.
 // The Acc channel will be closed when request has been fulfilled.
-// An error is returned if the queue is full.
 func (pq *PersistantQueue) Push(req PushRequest) error {
-
-	if max := pq.config.Persistance.MaxUnreadMessages; pq.len.val() >= max {
-		return fmt.Errorf("Queue is full with %d messages", max)
-	}
-
+	// TODO: Remove error if it can't happen
 	pq.pushChan <- req
 	return nil
 }
 
 func (pq *PersistantQueue) pushRoutine() (func(), error) {
+	log.Println("Opening appender for file", pq.config.Persistance.DataFile)
 	f, err := os.OpenFile(pq.config.Persistance.DataFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return func() {}, err
 	}
 
 	return func() {
+		log.Println("pushRoutine starting!")
 		for {
-			req := <-pq.pushChan
-			if err := req.write(f); err != nil {
-				log.Fatal(err)
+			select {
+			case req := <-pq.pushChan:
+				if err := req.write(f); err != nil {
+					log.Fatal(err)
+					return
+				}
+				close(req.Acc)
+			case <-pq.stopChan:
+				log.Println("pushRoutine stopping!")
+				f.Close()
+				pq.stopWG.Done()
 				return
 			}
-			pq.len.inc()
-			close(req.Acc)
 		}
 	}, nil
 }

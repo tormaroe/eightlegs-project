@@ -8,8 +8,9 @@ import (
 
 // Config represents all configuration options
 type Config struct {
-	API         API
-	Persistance Persistance
+	API             API
+	Persistance     Persistance
+	Acknowledgement Acknowledgement
 }
 
 // API holds configuration properties for the API
@@ -23,6 +24,11 @@ type Persistance struct {
 	NextMessageFile   string
 	MaxBytes          int
 	MaxUnreadMessages int
+}
+
+// Acknowledgement holds configuration properties related to acknowledging message receipt
+type Acknowledgement struct {
+	SecondsBeforeReInsert int
 }
 
 // Load will read and parse TOML configuration from file

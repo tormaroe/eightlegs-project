@@ -6,3 +6,9 @@ DataFile = "queuefile.nogit"
 NextMessageFile = "nextmessagefile.nogit"
 MaxBytes = 1024
 MaxUnreadMessages = 1000
+
+[Acknowledgement]
+
+# Minimum secnds to wait for acknowledgement after pop
+# before message is re-inserted into the queue.
+SecondsBeforeReInsert = 60
