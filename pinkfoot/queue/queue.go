@@ -7,7 +7,8 @@ import (
 	"github.com/tormaroe/eightlegs-project/pinkfoot/config"
 )
 
-// PersistantQueue ...
+// PersistantQueue is a durable message queue that guarrantees
+// at least once delivery.
 type PersistantQueue struct {
 	config config.Config
 
@@ -22,7 +23,7 @@ type PersistantQueue struct {
 	currOffset int64
 }
 
-// Init initializes a PersistantQueue based on the provided configuration
+// Init initializes a PersistantQueue based on the provided configuration.
 func Init(conf config.Config) (*PersistantQueue, error) {
 	pq := PersistantQueue{
 		config:          conf,

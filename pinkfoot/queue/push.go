@@ -12,7 +12,9 @@ type pushRequest struct {
 	wg    sync.WaitGroup
 }
 
-// Push will ...
+// Push the bytes of a message onto the queue.
+// A client should wait on the returned WaitGroup to ensure
+// that the message was persisted in durable storage.
 func (pq *PersistantQueue) Push(b []byte) *sync.WaitGroup {
 	req := pushRequest{
 		bytes: b,

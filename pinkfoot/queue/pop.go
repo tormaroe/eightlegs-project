@@ -9,11 +9,18 @@ import (
 	"github.com/google/uuid"
 )
 
+// Message has the bytes of a popped message from the queue,
+// as well as an ID that must be used in order to acknowledge
+// receipt of the message. If the receipt is not acknowledged,
+// the message will be re-inserted into the queue after some time.
 type Message struct {
 	Bytes []byte
 	ID    uuid.UUID
 }
 
+// Pop a message from the queue. A pointer to the message will be sent through
+// the returned channel.
+// If there are no messages in the queue, the channel will simply be closed.
 func (pq *PersistantQueue) Pop() chan *Message {
 	c := make(chan *Message)
 	pq.popChan <- c
