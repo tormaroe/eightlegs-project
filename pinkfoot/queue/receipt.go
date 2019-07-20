@@ -57,12 +57,8 @@ func (pq *PersistantQueue) rePushStalePulls() {
 		waitDuration := now.Sub(v.poppedAt)
 		if int(waitDuration.Seconds()) > limit {
 			log.Println("Re-inserting stale pull")
-			ack := make(chan struct{})
-			pq.Push(PushRequest{
-				Acc:   ack,
-				Bytes: v.bytes,
-			})
-			<-ack
+			done := pq.Push(v.bytes)
+			done.Wait()
 			delete(pq.waitReceiptList, k)
 		}
 	}

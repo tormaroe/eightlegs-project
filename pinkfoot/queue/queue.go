@@ -11,7 +11,7 @@ import (
 type PersistantQueue struct {
 	config config.Config
 
-	pushChan        chan PushRequest
+	pushChan        chan *pushRequest
 	popChan         chan PopRequest
 	waitReceiptChan chan waitingForReceipt
 	receiptChan     chan uuid.UUID
@@ -26,7 +26,7 @@ type PersistantQueue struct {
 func Init(conf config.Config) (*PersistantQueue, error) {
 	pq := PersistantQueue{
 		config:          conf,
-		pushChan:        make(chan PushRequest, 20),
+		pushChan:        make(chan *pushRequest, 0),
 		popChan:         make(chan PopRequest, 20),
 		waitReceiptChan: make(chan waitingForReceipt, 10),
 		receiptChan:     make(chan uuid.UUID, 20),

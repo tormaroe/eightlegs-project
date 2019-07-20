@@ -4,19 +4,23 @@ import (
 	"encoding/binary"
 	"log"
 	"os"
+	"sync"
 )
 
-type PushRequest struct {
-	Bytes []byte
-	Acc   chan struct{}
+type pushRequest struct {
+	bytes []byte
+	wg    sync.WaitGroup
 }
 
-// Push will process a PushRequest concurrently.
-// The Acc channel will be closed when request has been fulfilled.
-func (pq *PersistantQueue) Push(req PushRequest) error {
-	// TODO: Remove error if it can't happen
-	pq.pushChan <- req
-	return nil
+// Push will ...
+func (pq *PersistantQueue) Push(b []byte) *sync.WaitGroup {
+	req := pushRequest{
+		bytes: b,
+		wg:    sync.WaitGroup{},
+	}
+	req.wg.Add(1)
+	pq.pushChan <- &req
+	return &req.wg
 }
 
 func (pq *PersistantQueue) pushRoutine() (func(), error) {
@@ -35,7 +39,7 @@ func (pq *PersistantQueue) pushRoutine() (func(), error) {
 					log.Fatal(err)
 					return
 				}
-				close(req.Acc)
+				req.wg.Done()
 			case <-pq.stopChan:
 				log.Println("pushRoutine stopping!")
 				f.Close()
@@ -46,8 +50,8 @@ func (pq *PersistantQueue) pushRoutine() (func(), error) {
 	}, nil
 }
 
-func (req PushRequest) write(f *os.File) error {
-	size := len(req.Bytes)
+func (req pushRequest) write(f *os.File) error {
+	size := len(req.bytes)
 	sizeBytes := make([]byte, 8)
 	binary.LittleEndian.PutUint64(sizeBytes, uint64(size))
 
@@ -55,7 +59,7 @@ func (req PushRequest) write(f *os.File) error {
 		return err
 	}
 
-	if _, err := f.Write(req.Bytes); err != nil {
+	if _, err := f.Write(req.bytes); err != nil {
 		return err
 	}
 	return nil

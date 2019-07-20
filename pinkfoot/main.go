@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -33,6 +34,6 @@ func main() {
 	}
 	http.Handle("/", &apiHandler)
 
-	fmt.Printf("Listening to port %d\n", config.API.Port)
+	log.Printf("Listening to port %d\n", config.API.Port)
 	http.ListenAndServe(fmt.Sprintf(":%d", config.API.Port), nil)
 }

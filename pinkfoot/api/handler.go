@@ -41,19 +41,9 @@ func (h *Handler) handlePush(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acc := make(chan struct{})
-	err = h.Queue.Push(queue.PushRequest{
-		Acc:   acc,
-		Bytes: bytes,
-	})
+	done := h.Queue.Push(bytes)
+	done.Wait() // blocks until committed to storage
 
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusTooManyRequests)
-		return
-	}
-
-	<-acc // Wait for completion
 	// TODO: Timeout ??
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -65,18 +55,21 @@ func (h *Handler) handlePop(w http.ResponseWriter, r *http.Request) {
 	req := queue.PopRequest{
 		Reply: reply,
 	}
-	// TODO: Refactor nesting (error cases first)
-	if id, hasMessages := h.Queue.Pop(req); hasMessages {
-		bytes := <-reply
-		if bytes == nil || len(bytes) == 0 {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			w.Header().Add("X-Correlation-ID", id.String())
-			w.Write(bytes)
-		}
-	} else {
+
+	id, hasMessages := h.Queue.Pop(req)
+	if !hasMessages {
 		w.WriteHeader(http.StatusNotFound)
+		return
 	}
+
+	bytes := <-reply
+	if bytes == nil || len(bytes) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Add("X-Correlation-ID", id.String())
+	w.Write(bytes)
 }
 
 func (h *Handler) handleReceipt(w http.ResponseWriter, r *http.Request) {
