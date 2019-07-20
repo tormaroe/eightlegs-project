@@ -9,15 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type PopRequest struct {
-	Reply chan []byte
-	id    uuid.UUID
+type Message struct {
+	Bytes []byte
+	ID    uuid.UUID
 }
 
-func (pq *PersistantQueue) Pop(req PopRequest) (uuid.UUID, bool) {
-	req.id = uuid.New()
-	pq.popChan <- req
-	return req.id, true
+func (pq *PersistantQueue) Pop() chan *Message {
+	c := make(chan *Message)
+	pq.popChan <- c
+	return c
 }
 
 func (pq *PersistantQueue) popRoutine() (func(), error) {
@@ -31,20 +31,23 @@ func (pq *PersistantQueue) popRoutine() (func(), error) {
 		log.Println("popRoutine starting!")
 		for {
 			select {
-			case req := <-pq.popChan:
+			case replyChan := <-pq.popChan:
 				pq.setCurrOffset(f)
-				bytes, err := req.read(f)
+				bytes, err := readMessage(f)
 				if err == io.EOF {
-					req.Reply <- nil
-					close(req.Reply)
+					close(replyChan)
 					continue
 				} else if err != nil {
 					log.Fatal(err)
 					return
 				}
-				req.Reply <- bytes
-				close(req.Reply)
-				pq.addWaitingForReceipt(req.id, bytes, pq.currOffset)
+				id := uuid.New()
+				replyChan <- &Message{
+					ID:    id,
+					Bytes: bytes,
+				}
+				close(replyChan)
+				pq.addWaitingForReceipt(id, bytes, pq.currOffset)
 			case <-pq.stopChan:
 				log.Println("popRoutine stopping!")
 				pq.setCurrOffset(f)
@@ -65,7 +68,7 @@ func (pq *PersistantQueue) setCurrOffset(f io.Seeker) {
 	pq.currOffset = currOffset
 }
 
-func (req PopRequest) read(f *os.File) ([]byte, error) {
+func readMessage(f *os.File) ([]byte, error) {
 	sizeBytes := make([]byte, 8)
 	nRead, err := f.Read(sizeBytes)
 

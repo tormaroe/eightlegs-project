@@ -12,7 +12,7 @@ type PersistantQueue struct {
 	config config.Config
 
 	pushChan        chan *pushRequest
-	popChan         chan PopRequest
+	popChan         chan chan *Message
 	waitReceiptChan chan waitingForReceipt
 	receiptChan     chan uuid.UUID
 	waitReceiptList map[uuid.UUID]waitingForReceipt
@@ -27,7 +27,7 @@ func Init(conf config.Config) (*PersistantQueue, error) {
 	pq := PersistantQueue{
 		config:          conf,
 		pushChan:        make(chan *pushRequest, 0),
-		popChan:         make(chan PopRequest, 20),
+		popChan:         make(chan chan *Message, 20),
 		waitReceiptChan: make(chan waitingForReceipt, 10),
 		receiptChan:     make(chan uuid.UUID, 20),
 		waitReceiptList: make(map[uuid.UUID]waitingForReceipt),

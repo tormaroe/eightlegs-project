@@ -51,25 +51,16 @@ func (h *Handler) handlePush(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) handlePop(w http.ResponseWriter, r *http.Request) {
 	log.Printf("POP\n")
 
-	reply := make(chan []byte)
-	req := queue.PopRequest{
-		Reply: reply,
-	}
+	reply := h.Queue.Pop()
+	message := <-reply
 
-	id, hasMessages := h.Queue.Pop(req)
-	if !hasMessages {
+	if message == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	bytes := <-reply
-	if bytes == nil || len(bytes) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	w.Header().Add("X-Correlation-ID", id.String())
-	w.Write(bytes)
+	w.Header().Add("X-Correlation-ID", message.ID.String())
+	w.Write(message.Bytes)
 }
 
 func (h *Handler) handleReceipt(w http.ResponseWriter, r *http.Request) {
