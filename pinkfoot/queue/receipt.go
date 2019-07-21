@@ -26,7 +26,7 @@ func (pq *PersistantQueue) addWaitingForReceipt(id uuid.UUID, bytes []byte, offs
 
 // AddReceipt will acknowledge that message with the provided ID
 // have been received. The receipt will be processed concurrently
-// and is not guarranteed to succeed.
+// and is not guarranteed to succeed (but that should be fine, worst case message is re-introduced).
 // AddReceipt is idempotent, and will also handle unknown IDs gracefully.
 func (pq *PersistantQueue) AddReceipt(id uuid.UUID) {
 	log.Println("AddReceipt")
