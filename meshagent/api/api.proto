@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+
+package api;
+
+service MeshAgent {
+    rpc MyStatusUpdate(MeshServiceStatus) returns (MeshServiceStatusResponse) {}
+}
+
+message MeshServiceStatus {
+    string service_uuid = 1;
+    string service_type = 2;
+}
+
+message MeshServiceStatusResponse {
+    
+}
