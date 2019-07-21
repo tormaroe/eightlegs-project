@@ -25,11 +25,13 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type MeshServiceStatus struct {
-	ServiceUuid          string   `protobuf:"bytes,1,opt,name=service_uuid,json=serviceUuid,proto3" json:"service_uuid,omitempty"`
-	ServiceType          string   `protobuf:"bytes,2,opt,name=service_type,json=serviceType,proto3" json:"service_type,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	ServiceUuid          string                          `protobuf:"bytes,1,opt,name=service_uuid,json=serviceUuid,proto3" json:"service_uuid,omitempty"`
+	ServiceType          string                          `protobuf:"bytes,2,opt,name=service_type,json=serviceType,proto3" json:"service_type,omitempty"`
+	Downstreams          []*MeshServiceStatus_Downstream `protobuf:"bytes,3,rep,name=downstreams,proto3" json:"downstreams,omitempty"`
+	Upstreams            []*MeshServiceStatus_Upstream   `protobuf:"bytes,4,rep,name=upstreams,proto3" json:"upstreams,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
+	XXX_unrecognized     []byte                          `json:"-"`
+	XXX_sizecache        int32                           `json:"-"`
 }
 
 func (m *MeshServiceStatus) Reset()         { *m = MeshServiceStatus{} }
@@ -71,6 +73,138 @@ func (m *MeshServiceStatus) GetServiceType() string {
 	return ""
 }
 
+func (m *MeshServiceStatus) GetDownstreams() []*MeshServiceStatus_Downstream {
+	if m != nil {
+		return m.Downstreams
+	}
+	return nil
+}
+
+func (m *MeshServiceStatus) GetUpstreams() []*MeshServiceStatus_Upstream {
+	if m != nil {
+		return m.Upstreams
+	}
+	return nil
+}
+
+type MeshServiceStatus_Downstream struct {
+	Address              string   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Protocol             string   `protobuf:"bytes,2,opt,name=protocol,proto3" json:"protocol,omitempty"`
+	MeshServiceId        string   `protobuf:"bytes,3,opt,name=mesh_service_id,json=meshServiceId,proto3" json:"mesh_service_id,omitempty"`
+	Mps                  float32  `protobuf:"fixed32,4,opt,name=mps,proto3" json:"mps,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *MeshServiceStatus_Downstream) Reset()         { *m = MeshServiceStatus_Downstream{} }
+func (m *MeshServiceStatus_Downstream) String() string { return proto.CompactTextString(m) }
+func (*MeshServiceStatus_Downstream) ProtoMessage()    {}
+func (*MeshServiceStatus_Downstream) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{0, 0}
+}
+
+func (m *MeshServiceStatus_Downstream) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MeshServiceStatus_Downstream.Unmarshal(m, b)
+}
+func (m *MeshServiceStatus_Downstream) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MeshServiceStatus_Downstream.Marshal(b, m, deterministic)
+}
+func (m *MeshServiceStatus_Downstream) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MeshServiceStatus_Downstream.Merge(m, src)
+}
+func (m *MeshServiceStatus_Downstream) XXX_Size() int {
+	return xxx_messageInfo_MeshServiceStatus_Downstream.Size(m)
+}
+func (m *MeshServiceStatus_Downstream) XXX_DiscardUnknown() {
+	xxx_messageInfo_MeshServiceStatus_Downstream.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MeshServiceStatus_Downstream proto.InternalMessageInfo
+
+func (m *MeshServiceStatus_Downstream) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *MeshServiceStatus_Downstream) GetProtocol() string {
+	if m != nil {
+		return m.Protocol
+	}
+	return ""
+}
+
+func (m *MeshServiceStatus_Downstream) GetMeshServiceId() string {
+	if m != nil {
+		return m.MeshServiceId
+	}
+	return ""
+}
+
+func (m *MeshServiceStatus_Downstream) GetMps() float32 {
+	if m != nil {
+		return m.Mps
+	}
+	return 0
+}
+
+type MeshServiceStatus_Upstream struct {
+	Address              string   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Protocol             string   `protobuf:"bytes,2,opt,name=protocol,proto3" json:"protocol,omitempty"`
+	Mps                  float32  `protobuf:"fixed32,3,opt,name=mps,proto3" json:"mps,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *MeshServiceStatus_Upstream) Reset()         { *m = MeshServiceStatus_Upstream{} }
+func (m *MeshServiceStatus_Upstream) String() string { return proto.CompactTextString(m) }
+func (*MeshServiceStatus_Upstream) ProtoMessage()    {}
+func (*MeshServiceStatus_Upstream) Descriptor() ([]byte, []int) {
+	return fileDescriptor_00212fb1f9d3bf1c, []int{0, 1}
+}
+
+func (m *MeshServiceStatus_Upstream) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MeshServiceStatus_Upstream.Unmarshal(m, b)
+}
+func (m *MeshServiceStatus_Upstream) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MeshServiceStatus_Upstream.Marshal(b, m, deterministic)
+}
+func (m *MeshServiceStatus_Upstream) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MeshServiceStatus_Upstream.Merge(m, src)
+}
+func (m *MeshServiceStatus_Upstream) XXX_Size() int {
+	return xxx_messageInfo_MeshServiceStatus_Upstream.Size(m)
+}
+func (m *MeshServiceStatus_Upstream) XXX_DiscardUnknown() {
+	xxx_messageInfo_MeshServiceStatus_Upstream.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MeshServiceStatus_Upstream proto.InternalMessageInfo
+
+func (m *MeshServiceStatus_Upstream) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *MeshServiceStatus_Upstream) GetProtocol() string {
+	if m != nil {
+		return m.Protocol
+	}
+	return ""
+}
+
+func (m *MeshServiceStatus_Upstream) GetMps() float32 {
+	if m != nil {
+		return m.Mps
+	}
+	return 0
+}
+
 type MeshServiceStatusResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -104,24 +238,34 @@ var xxx_messageInfo_MeshServiceStatusResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*MeshServiceStatus)(nil), "api.MeshServiceStatus")
+	proto.RegisterType((*MeshServiceStatus_Downstream)(nil), "api.MeshServiceStatus.Downstream")
+	proto.RegisterType((*MeshServiceStatus_Upstream)(nil), "api.MeshServiceStatus.Upstream")
 	proto.RegisterType((*MeshServiceStatusResponse)(nil), "api.MeshServiceStatusResponse")
 }
 
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 161 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4c, 0x2c, 0xc8, 0xd4,
-	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4e, 0x2c, 0xc8, 0x54, 0x8a, 0xe4, 0x12, 0xf4, 0x4d,
-	0x2d, 0xce, 0x08, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0x0d, 0x2e, 0x49, 0x2c, 0x29, 0x2d, 0x16,
-	0x52, 0xe4, 0xe2, 0x29, 0x86, 0x08, 0xc4, 0x97, 0x96, 0x66, 0xa6, 0x48, 0x30, 0x2a, 0x30, 0x6a,
-	0x70, 0x06, 0x71, 0x43, 0xc5, 0x42, 0x4b, 0x33, 0x53, 0x90, 0x95, 0x94, 0x54, 0x16, 0xa4, 0x4a,
-	0x30, 0xa1, 0x28, 0x09, 0xa9, 0x2c, 0x48, 0x55, 0x92, 0xe6, 0x92, 0xc4, 0x30, 0x3a, 0x28, 0xb5,
-	0xb8, 0x20, 0x3f, 0xaf, 0x38, 0xd5, 0x28, 0x9c, 0x8b, 0x13, 0x24, 0xe9, 0x98, 0x9e, 0x9a, 0x57,
-	0x22, 0xe4, 0xc5, 0xc5, 0xe7, 0x5b, 0x09, 0x51, 0x10, 0x5a, 0x90, 0x92, 0x58, 0x92, 0x2a, 0x24,
-	0xa6, 0x07, 0x72, 0x27, 0x86, 0x76, 0x29, 0x39, 0xec, 0xe2, 0x30, 0x63, 0x95, 0x18, 0x92, 0xd8,
-	0xc0, 0x9e, 0x33, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xb3, 0xb6, 0xc8, 0x10, 0xe9, 0x00, 0x00,
-	0x00,
+	// 294 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x90, 0x3f, 0x4f, 0xc3, 0x30,
+	0x10, 0xc5, 0x49, 0x8d, 0xa0, 0xb9, 0xf0, 0xd7, 0x03, 0x0a, 0x41, 0x82, 0x36, 0x03, 0xca, 0x94,
+	0xa1, 0xcc, 0x0c, 0x08, 0x16, 0x90, 0xba, 0xb8, 0x44, 0x8c, 0x95, 0xa9, 0x4f, 0xd4, 0x12, 0x49,
+	0xac, 0xd8, 0x01, 0x45, 0xe2, 0x3b, 0xf1, 0x15, 0x51, 0xd2, 0x38, 0x29, 0x6a, 0x59, 0xd8, 0x7c,
+	0xe7, 0x77, 0xbf, 0x7b, 0xef, 0xc0, 0xe5, 0x4a, 0xc6, 0xaa, 0xc8, 0x4d, 0x4e, 0x09, 0x57, 0x32,
+	0xfc, 0x26, 0x70, 0x3a, 0x45, 0xbd, 0x9c, 0x61, 0xf1, 0x21, 0x17, 0x38, 0x33, 0xdc, 0x94, 0x9a,
+	0x8e, 0xe1, 0x40, 0xaf, 0x1a, 0xf3, 0xb2, 0x94, 0xc2, 0x77, 0x46, 0x4e, 0xe4, 0x32, 0xaf, 0xed,
+	0x25, 0xa5, 0x14, 0xeb, 0x12, 0x53, 0x29, 0xf4, 0x07, 0xbf, 0x24, 0xcf, 0x95, 0x42, 0x7a, 0x0f,
+	0x9e, 0xc8, 0x3f, 0x33, 0x6d, 0x0a, 0xe4, 0xa9, 0xf6, 0xc9, 0x88, 0x44, 0xde, 0x64, 0x1c, 0xd7,
+	0x0e, 0x36, 0x56, 0xc6, 0x0f, 0x9d, 0x92, 0xad, 0x4f, 0xd1, 0x5b, 0x70, 0x4b, 0x65, 0x11, 0xbb,
+	0x0d, 0xe2, 0xea, 0x0f, 0x44, 0xd2, 0xea, 0x58, 0x3f, 0x11, 0x7c, 0x01, 0xf4, 0x64, 0xea, 0xc3,
+	0x3e, 0x17, 0xa2, 0x40, 0xad, 0xdb, 0x48, 0xb6, 0xa4, 0x01, 0x0c, 0x9b, 0xab, 0x2c, 0xf2, 0xf7,
+	0x36, 0x4a, 0x57, 0xd3, 0x6b, 0x38, 0x4e, 0x51, 0x2f, 0xe7, 0x36, 0xaf, 0x14, 0x3e, 0x69, 0x24,
+	0x87, 0x69, 0xef, 0xe1, 0x51, 0xd0, 0x13, 0x20, 0xa9, 0xaa, 0x4d, 0x3a, 0xd1, 0x80, 0xd5, 0xcf,
+	0x80, 0xc1, 0xd0, 0x9a, 0xfa, 0xe7, 0xee, 0x96, 0x49, 0x3a, 0x66, 0x78, 0x01, 0xe7, 0x1b, 0xd1,
+	0x19, 0x6a, 0x95, 0x67, 0x1a, 0x27, 0x2f, 0xe0, 0xd6, 0x9f, 0x77, 0x6f, 0x98, 0x19, 0xfa, 0x04,
+	0x47, 0xd3, 0x6a, 0x25, 0x48, 0x94, 0xe0, 0x06, 0xe9, 0xd9, 0xf6, 0xcb, 0x05, 0x97, 0xdb, 0xfb,
+	0x16, 0x1b, 0xee, 0xbc, 0xee, 0x35, 0x8e, 0x6e, 0x7e, 0x02, 0x00, 0x00, 0xff, 0xff, 0x15, 0x17,
+	0x7c, 0x9b, 0x40, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

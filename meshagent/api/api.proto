@@ -8,8 +8,21 @@ service MeshAgent {
 }
 
 message MeshServiceStatus {
+    message Downstream {
+        string address = 1;
+        string protocol = 2;
+        string mesh_service_id = 3;
+        float mps = 4;
+    }
+    message Upstream {
+        string address = 1;
+        string protocol = 2;
+        float mps = 3;
+    }
     string service_uuid = 1;
     string service_type = 2;
+    repeated Downstream downstreams = 3;
+    repeated Upstream upstreams = 4;
 }
 
 message MeshServiceStatusResponse {
